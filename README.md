@@ -6,7 +6,7 @@ NodeJS LTS
 
 Para nuestro entorno de pruebas utilizaremos POSTMAN
 
-## Comandos utulizados para crear y correr proyecto:
+## Comandos utilizados para crear y correr proyecto:
 
 ### `npx express-generator`
 
