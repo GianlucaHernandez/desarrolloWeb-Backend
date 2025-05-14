@@ -21,18 +21,28 @@ router.get('/getGoals', function(req, res, next) {
  
 router.delete('/deleteGoal/:id', function(req, res, next) {
     const goalId = parseInt(req.params.id);
-    goals = goals.filter(goal => goal.id !== goalId);
-    res.json({ message: 'Goal deleted successfully' });
+    const goal = goals.find(goal => goal.id === goalId);
+    if(!goal){
+        return res.status(400).json({message: 'Goal not found'});
+    }else{
+        goals = goals.filter(goal => goal.id !== goalId);
+        res.json({ message: 'Goal deleted successfully' });
+    }
 });
 
 router.post('/addGoal', function(req, res, next) {
+    const {name, description} = req.body;
+    if( !name || !description){
+         return res.status(400).json({ message: 'Incorrect parameters sent' });
+    }else{
     const newGoal = {
         id: goals.length + 1,
-        name: req.body.name,
-        description: req.body.description
+        name,
+        description
     };
     goals.push(newGoal);
     res.json({ message: 'Goal added successfully', goal: newGoal });
+    }
 });
 
 module.exports = router;

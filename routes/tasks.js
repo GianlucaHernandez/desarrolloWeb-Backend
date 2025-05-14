@@ -26,18 +26,28 @@ router.get('/getTasks', function(req, res, next) {
 
 router.delete('/deleteTask/:id', function(req, res, next) {
     const taskId = parseInt(req.params.id);
-    tasks = tasks.filter(task => task.id !== taskId);
-    res.json({ message: 'Task deleted successfully' });
+    const task = tasks.find(task => task.id === taskId);
+    if(!task){
+        return res.status(400).json({message: 'task not found'});
+    }else{
+        tasks = tasks.filter(task => task.id !== taskId);
+        res.json({ message: 'Task deleted successfully' });
+    }
 });
 
 router.post('/addTask', function(req, res, next) {
+    const {name, description } = req.body;
+    if(!name || !description){
+        return res.status(400).json({ message: 'Incorrect parameters sent'})
+    }else{
     const newTask = {
-        id: tasks.length + 1,
-        name: req.body.name,
-        description: req.body.description
+    id: tasks.length + 1,
+        name,
+        description
     };
     tasks.push(newTask);
     res.json({ message: 'Task added successfully', task: newTask });
+    }
 });
 
 module.exports = router;
