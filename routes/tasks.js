@@ -1,52 +1,49 @@
 var express = require('express');
 const  route  = require('.');
 var router = express.Router();
+const mongoose = require('mongoose');
 
-let tasks = [
-    {
-        id: 1,
-        name: 'Task 1',
-        description: 'Description for Task 1'
-    },
-    {
-        id: 2,
-        name: 'Task 2',
-        description: 'Description for Task 2'
-    },
-    {
-        id: 3,
-        name: 'Task 3',
-        description: 'Description for Task 3'
-    }
-]
+
+const taskInit = mongoose.model('tasks', {
+    name:String,
+    description:String,
+    dueDate:String
+},'tasks');
+
 router.get('/getTasks', function(req, res, next) {
-
-    res.json({tasks});
-})
+    taskInit.find().then (
+        (response)=> res.status(200).json(response))
+        .catch(err=>{
+            console.log(err);
+            res.status(500).json({});
+        });
+});
 
 router.delete('/deleteTask/:id', function(req, res, next) {
-    const taskId = parseInt(req.params.id);
-    const task = tasks.find(task => task.id === taskId);
-    if(!task){
-        return res.status(400).json({message: 'task not found'});
+    console.log(req.params.id);
+    if(req.params.id && req.params.id){
+        let id = req.params.id;
+        taskInit.deleteOne({_id:new mongoose.Types.ObjectId(id)}).then((response)=>{
+            res.status(200).json (response);
+        }).catch((err)=> {
+            return res.status(400).json({message: 'task not found'});
+        })
     }else{
-        tasks = tasks.filter(task => task.id !== taskId);
-        res.json({ message: 'Task deleted successfully' });
+        res.status(400).json({})
     }
 });
 
 router.post('/addTask', function(req, res, next) {
-    const {name, description } = req.body;
-    if(!name || !description){
-        return res.status(400).json({ message: 'Incorrect parameters sent'})
+    let timestamp = Date.now() + Math.random();
+    if(req.body && req.body.name && req.body.description && req.body.dueDate){
+        const task = new taskInit(req.body);
+        task.save().then(
+            () => res.status(200).json({message: 'Added task'})
+        ).catch(
+            (err) => res.status(400).json(err)
+        );
     }else{
-    const newTask = {
-    id: tasks.length + 1,
-        name,
-        description
-    };
-    tasks.push(newTask);
-    res.json({ message: 'Task added successfully', task: newTask });
+        res.status(400).json({});
     }
 });
 

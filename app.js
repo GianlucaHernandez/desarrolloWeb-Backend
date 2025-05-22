@@ -7,9 +7,10 @@ var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
 var tasksRouter = require('./routes/tasks');
 var goalsRouter = require('./routes/goals');
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1:27017/desarrolloweb')
 
 var app = express();
 
